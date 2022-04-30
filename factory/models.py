@@ -6,14 +6,12 @@ from sqlalchemy import (
     Integer,
     String,
     Enum,
-    Boolean,
     FLOAT,
     event,
 )
 
 from sqlalchemy.orm import Mapper
 from factory.database import Base, SessionLocal
-from sqlalchemy.sql.expression import text
 from sqlalchemy.orm import relationship, backref, Session
 from factory import utils
 
