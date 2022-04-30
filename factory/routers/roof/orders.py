@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from factory import models, oauth2
 from factory.database import get_db
 from factory.schema import token_schema, roof_schema, orders_update_schema
-from sqlalchemy import exc, func
+from sqlalchemy import exc
 from factory.utils import ProductionStage
 
 roof_orders_router = APIRouter(
@@ -27,7 +27,7 @@ roof_orders_router = APIRouter(
 )
 def get_all_orders(
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     results = (
         db.query(models.RoofOrder)
@@ -48,7 +48,7 @@ def get_all_orders(
 def search_order(
     request: Request,
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     try:
         query_params = request.query_params._dict
@@ -91,7 +91,7 @@ def update_an_order(
     id: int,
     order: orders_update_schema.OrderDetailUpdate,
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
 ):
     order_query = db.query(models.RoofOrderDetails).filter(
         models.RoofOrderDetails.id == id

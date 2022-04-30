@@ -9,12 +9,10 @@ from fastapi import (
 import asyncio
 from sqlalchemy.orm import Session
 from factory import models, oauth2
-from factory.config import settings
 from factory.database import get_db
 from factory.schema import token_schema, ds_schema, orders_update_schema
-from sqlalchemy import exc, func, desc
-from .ds_con_manager import ds_con_manager
-from factory.utils import Product, ProductionStage
+from sqlalchemy import exc
+from factory.utils import ProductionStage
 
 ds_orders_router = APIRouter(
     prefix="/ds",
@@ -29,7 +27,7 @@ ds_orders_router = APIRouter(
 )
 def get_all_orders(
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     results = (
         db.query(models.DSOrder)
@@ -48,7 +46,7 @@ def get_all_orders(
 def search_order(
     request: Request,
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     try:
         query_params = request.query_params._dict

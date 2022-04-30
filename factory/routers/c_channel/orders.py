@@ -17,8 +17,8 @@ from factory import models, oauth2
 from factory.database import get_db
 from factory.routers.c_channel.holes_utils import saving_holes_image
 from factory.schema import token_schema, c_channel_schema, orders_update_schema
-from sqlalchemy import exc, func
-from factory.utils import BasePath, Product, ProductionStage
+from sqlalchemy import exc
+from factory.utils import BasePath, ProductionStage
 
 cchannel_orders_router = APIRouter(
     prefix="/cchannel",
@@ -33,7 +33,7 @@ cchannel_orders_router = APIRouter(
 )
 def get_all_orders(
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     results = (
         db.query(models.CChannelOrder)
@@ -73,7 +73,7 @@ def update_an_order(
 def search_order(
     request: Request,
     db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     try:
         query_params = request.query_params._dict
@@ -145,7 +145,7 @@ async def create_order(
     notes: str | None = Form(None),
     production_stage: ProductionStage | None = Form(...),
     db: Session = Depends(get_db),
-    # manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
 ):
 
     try:

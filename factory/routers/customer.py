@@ -10,16 +10,16 @@ from sqlalchemy.orm import Session
 customer_router = APIRouter(prefix="/customers", tags=["Customer"])
 
 
-@customer_router.get(
-    "/all",
-    description="all customers",
-    response_model=list[customer_schema.CustomerOut],
-)
-def get_all_customers(
-    db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
-):
-    return db.query(models.Customer).all()
+# @customer_router.get(
+#     "/all",
+#     description="all customers",
+#     response_model=list[customer_schema.CustomerOut],
+# )
+# def get_all_customers(
+#     db: Session = Depends(get_db),
+#     manager_info: token_schema.PayloadData = Depends(oauth2.get_issuer),
+# ):
+#     return db.query(models.Customer).all()
 
 
 @customer_router.get(
@@ -102,25 +102,25 @@ def update_customer(
     return customer_query.first()
 
 
-@customer_router.delete(
-    "/delete/{id}",
-    description="delete the existing customer",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-def delete_customer(
-    id: int,
-    db: Session = Depends(get_db),
-    manager_info: token_schema.PayloadData = Depends(oauth2.get_admin),
-):
-    result = db.query(models.Customer).filter(models.Customer.id == id).first()
-    # delete returns number of rows match to be deleted.
-    # not result means not a single row has matched.
-    if result is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"The customer does not exist.",
-        )
-        # use this method to catch customer object to be deleted in event listener (before_delete).
-    db.delete(result)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+# @customer_router.delete(
+#     "/delete/{id}",
+#     description="delete the existing customer",
+#     status_code=status.HTTP_204_NO_CONTENT,
+# )
+# def delete_customer(
+#     id: int,
+#     db: Session = Depends(get_db),
+#     manager_info: token_schema.PayloadData = Depends(oauth2.get_admin),
+# ):
+#     result = db.query(models.Customer).filter(models.Customer.id == id).first()
+#     # delete returns number of rows match to be deleted.
+#     # not result means not a single row has matched.
+#     if result is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"The customer does not exist.",
+#         )
+#         # use this method to catch customer object to be deleted in event listener (before_delete).
+#     db.delete(result)
+#     db.commit()
+#     return Response(status_code=status.HTTP_204_NO_CONTENT)
