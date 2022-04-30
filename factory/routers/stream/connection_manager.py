@@ -1,4 +1,5 @@
 from fastapi import WebSocket
+from websockets.exceptions import ConnectionClosedError
 
 
 class ConnectionManager:
@@ -14,7 +15,10 @@ class ConnectionManager:
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:
-            await connection.send_json(message)
+            try:
+                await connection.send_json(message)
+            except ConnectionClosedError:
+                self.active_connections.remove(connection)
 
 
 con_manager = ConnectionManager()

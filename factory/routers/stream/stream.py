@@ -3,11 +3,11 @@ from factory import models, oauth2, utils
 from factory.config import settings
 from factory.database import get_db
 from factory.schema import token_schema, stream_schema
-from fastapi import APIRouter, Depends, WebSocket
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from .connection_manager import con_manager
-from sqlalchemy import desc, func
-from websockets.exceptions import ConnectionClosedError
+from sqlalchemy import func
+
 
 stream_router = APIRouter(prefix="/stream")
 
@@ -53,9 +53,8 @@ async def stream_all_new_order(
     # manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
 ):
     await con_manager.connect(websocket=websoc)
-    print(con_manager.active_connections)
     try:
-        while True:
+        while len(con_manager.active_connections) > 0:
             result = (
                 db.query(
                     models.Transcation.product_type,
@@ -67,8 +66,6 @@ async def stream_all_new_order(
                 )
                 .all()
             )
-            print(result)
-
             # total_insert_order_for_each = (
             #     db.query(
             #         models.Transcation.product_type,
@@ -99,7 +96,6 @@ async def stream_all_new_order(
             final_result = [stream_schema.OrderCount.from_orm(i).dict() for i in result]
 
             await con_manager.broadcast(final_result)
-
             await asyncio.sleep(settings.stream_delay_time)
-    except ConnectionClosedError:
+    except WebSocketDisconnect:
         con_manager.disconnect(websoc)
