@@ -1,8 +1,8 @@
-"""init db
+"""new db design
 
-Revision ID: 102c5739d625
+Revision ID: cb5c579bf2b3
 Revises: 
-Create Date: 2022-04-20 02:39:19.022792
+Create Date: 2022-05-01 03:12:06.486925
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '102c5739d625'
+revision = 'cb5c579bf2b3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,85 +51,44 @@ def upgrade():
     sa.Column('type', sa.Enum('admin', 'issuer', 'listener', name='managertype'), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
-    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
     op.create_table('transcations',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('product_type', sa.Enum('ds', 'c_purlin', 'u_beam', 'i_beam', 'c_channel', 'hollow', 'plain', 'roof', name='product'), nullable=False),
     sa.Column('transcation_type', sa.Enum('insert', 'update', 'delete', name='transtype'), nullable=False),
     sa.Column('production_stage', sa.Enum('pending', 'producing', 'done', name='productionstage'), nullable=False),
-    sa.Column('modified_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('cchannel_order_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
-    sa.Column('transcation_id', sa.Integer(), nullable=True),
-    sa.Column('cchannel_order_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['transcation_id'], ['transcations.id'], ondelete='CASCADE'),
+    sa.Column('modified_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('cchannel_orders',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=True),
     sa.Column('manager_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['manager_id'], ['managers.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('ds_order_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
-    sa.Column('transcation_id', sa.Integer(), nullable=True),
-    sa.Column('ds_order_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['transcation_id'], ['transcations.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('ds_orders',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=True),
     sa.Column('manager_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['manager_id'], ['managers.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('roof_order_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
-    sa.Column('transcation_id', sa.Integer(), nullable=True),
-    sa.Column('roof_order_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['transcation_id'], ['transcations.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('roof_orders',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('notes', sa.String(), nullable=True),
     sa.Column('customer_id', sa.Integer(), nullable=True),
     sa.Column('manager_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['manager_id'], ['managers.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('cchannel_order_detail_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('cchannel_order_logs_id', sa.Integer(), nullable=False),
-    sa.Column('channel_height', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('channel_width', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('holes', sa.String(), nullable=True),
-    sa.Column('length_per_sheet', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('no_of_sheets', sa.Integer(), nullable=False),
-    sa.Column('total_length', sa.FLOAT(precision=4), nullable=False),
-    sa.Column('thickness', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('zinc_grade', sa.Integer(), nullable=False),
-    sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['cchannel_order_logs_id'], ['cchannel_order_logs.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('cchannel_order_details',
@@ -145,20 +104,8 @@ def upgrade():
     sa.Column('zinc_grade', sa.Integer(), nullable=False),
     sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.Column('production_stage', sa.Enum('pending', 'producing', 'done', name='productionstage'), nullable=False),
+    sa.Column('notes', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['cchannel_order_id'], ['cchannel_orders.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('ds_order_detail_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('ds_order_logs_id', sa.Integer(), nullable=False),
-    sa.Column('length_per_sheet', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('total_length', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('no_of_sheets', sa.Integer(), nullable=False),
-    sa.Column('depth', sa.FLOAT(precision=1), nullable=False),
-    sa.Column('thickness', sa.FLOAT(precision=1), nullable=False),
-    sa.Column('zinc_grade', sa.Integer(), nullable=False),
-    sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['ds_order_logs_id'], ['ds_order_logs.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('ds_order_details',
@@ -172,20 +119,8 @@ def upgrade():
     sa.Column('zinc_grade', sa.Integer(), nullable=False),
     sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.Column('production_stage', sa.Enum('pending', 'producing', 'done', name='productionstage'), nullable=False),
+    sa.Column('notes', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['ds_order_id'], ['ds_orders.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('roof_order_detail_logs',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('roof_order_logs_id', sa.Integer(), nullable=False),
-    sa.Column('color', sa.String(), nullable=False),
-    sa.Column('manufacturer', sa.Enum('taiwan', 'china', 'vietnam', name='colorplainmanufacturer'), nullable=False),
-    sa.Column('length_per_sheet', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('no_of_sheets', sa.Integer(), nullable=False),
-    sa.Column('total_length', sa.FLOAT(precision=4), nullable=False),
-    sa.Column('thickness', sa.FLOAT(precision=2), nullable=False),
-    sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['roof_order_logs_id'], ['roof_order_logs.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('roof_order_details',
@@ -199,6 +134,7 @@ def upgrade():
     sa.Column('thickness', sa.FLOAT(precision=2), nullable=False),
     sa.Column('pick_up_time', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.Column('production_stage', sa.Enum('pending', 'producing', 'done', name='productionstage'), nullable=False),
+    sa.Column('notes', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['roof_order_id'], ['roof_orders.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -208,17 +144,11 @@ def upgrade():
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('roof_order_details')
-    op.drop_table('roof_order_detail_logs')
     op.drop_table('ds_order_details')
-    op.drop_table('ds_order_detail_logs')
     op.drop_table('cchannel_order_details')
-    op.drop_table('cchannel_order_detail_logs')
     op.drop_table('roof_orders')
-    op.drop_table('roof_order_logs')
     op.drop_table('ds_orders')
-    op.drop_table('ds_order_logs')
     op.drop_table('cchannel_orders')
-    op.drop_table('cchannel_order_logs')
     op.drop_table('transcations')
     op.drop_table('managers')
     op.drop_table('manager_logs')

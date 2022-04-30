@@ -18,7 +18,7 @@ from factory.database import get_db
 from factory.routers.c_channel.holes_utils import saving_holes_image
 from factory.schema import token_schema, c_channel_schema, orders_update_schema
 from sqlalchemy import exc
-from factory.utils import BasePath, ProductionStage
+from factory.utils import BasePath, Product, ProductionStage, TransType
 
 cchannel_orders_router = APIRouter(
     prefix="/cchannel",
@@ -60,7 +60,14 @@ def update_an_order(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Connect to the Admin.",
         )
+    insert_update_noti = models.Transcation(
+        order_id=id,
+        product_type=Product.c_channel,
+        production_stage=order.production_stage,
+        transcation_type=TransType.update,
+    )
     order_query.update(order.dict(), synchronize_session=False)
+    db.add(insert_update_noti)
     db.commit()
     return
 

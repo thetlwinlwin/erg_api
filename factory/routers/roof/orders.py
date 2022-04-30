@@ -12,7 +12,7 @@ from factory import models, oauth2
 from factory.database import get_db
 from factory.schema import token_schema, roof_schema, orders_update_schema
 from sqlalchemy import exc
-from factory.utils import ProductionStage
+from factory.utils import ProductionStage, Product, TransType
 
 roof_orders_router = APIRouter(
     prefix="/roof",
@@ -101,7 +101,14 @@ def update_an_order(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Connect to the Admin.",
         )
+    insert_update_noti = models.Transcation(
+        order_id=id,
+        product_type=Product.roof,
+        production_stage=order.production_stage,
+        transcation_type=TransType.update,
+    )
     order_query.update(order.dict(), synchronize_session=False)
+    db.add(insert_update_noti)
     db.commit()
     return
 
