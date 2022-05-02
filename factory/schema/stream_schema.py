@@ -36,10 +36,3 @@ class OrderCount(BaseModel):
     class Config:
         use_enum_values = True
         orm_mode = True
-
-
-# class StreamOrder(BaseModel):
-#     orders: list[OrderCount]
-
-#     class Config:
-#         use_enum_values = True

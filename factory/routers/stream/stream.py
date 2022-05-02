@@ -45,6 +45,7 @@ def get_order_from_trans(
     return data
 
 
+## INSERT_WITHOUT_DONE - DEL - UPDATE_WITH_DONE = CURRENT NON-DONE NUMBER OF ORDERS
 ## even tho we wrote prefix for stream router as '/stream' at the top, we need to add here again as WEBSOCKET DOES NOT RECOGNIZE THE PREFIX FROM APIROUTER CLASS.
 @stream_router.websocket("/stream/listen")
 async def stream_all_new_order(
@@ -66,16 +67,19 @@ async def stream_all_new_order(
                 )
                 .all()
             )
-            # total_insert_order_for_each = (
+            # total_insert_trans = (
             #     db.query(
             #         models.Transcation.product_type,
             #         func.count(models.Transcation.id).label("count"),
             #     )
             #     .group_by(models.Transcation.product_type)
-            #     .filter(models.Transcation.transcation_type == utils.TransType.insert)
+            #     .filter_by(
+            #         models.Transcation.transcation_type == utils.TransType.insert,
+            #         models.Transcation.product_type != utils.ProductionStage.done,
+            #     )
             #     .all()
             # )
-            # total_delete_order_for_each = (
+            # total_delete_trans = (
             #     db.query(
             #         models.Transcation.product_type,
             #         func.count(models.Transcation.id).label("count"),
@@ -84,15 +88,29 @@ async def stream_all_new_order(
             #     .filter(models.Transcation.transcation_type == utils.TransType.delete)
             #     .all()
             # )
+            # total_updated_trans = (
+            #     db.query(
+            #         models.Transcation.product_type,
+            #         func.count(models.Transcation.id).label("count"),
+            #     )
+            #     .group_by(models.Transcation.product_type)
+            #     .filter_by(
+            #         models.Transcation.transcation_type == utils.TransType.update,
+            #         models.Transcation.production_stage == utils.ProductionStage.done,
+            #     )
+            #     .all()
+            # )
 
-            # total_insert_list = [
-            #     stream_schema.OrderCount.from_orm(i)
-            #     for i in total_insert_order_for_each
+            # total_inserts = [
+            #     stream_schema.OrderCount.from_orm(i) for i in total_insert_trans
             # ]
-            # total_delete_list = [
-            #     stream_schema.OrderCount.from_orm(i)
-            #     for i in total_delete_order_for_each
+            # total_deletes = [
+            #     stream_schema.OrderCount.from_orm(i) for i in total_delete_trans
             # ]
+            # total_updates = [
+            #     stream_schema.OrderCount.from_orm(i) for i in total_updated_trans
+            # ]
+
             final_result = [stream_schema.OrderCount.from_orm(i).dict() for i in result]
 
             await con_manager.broadcast(final_result)
