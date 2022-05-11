@@ -11,7 +11,7 @@ from fastapi import (
     Response,
     BackgroundTasks,
 )
-
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from factory import models, oauth2
 from factory.database import get_db
@@ -134,6 +134,25 @@ def delete_an_order(
             detail=f"The order is either done or producing and it cannot be stopped.",
         )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@cchannel_orders_router.get(
+    "/get/image/{id}",
+    description="accept order detail id and give back image",
+)
+async def get_images(
+    id: int,
+    db: Session = Depends(get_db),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
+):
+    query = db.query(models.CChannelOrderDetails).get(id)
+    if query is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Can't find image associated to this order.",
+        )
+
+    return FileResponse(query.holes)
 
 
 @cchannel_orders_router.post("/create")
