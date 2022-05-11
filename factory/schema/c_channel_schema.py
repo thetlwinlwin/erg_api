@@ -1,9 +1,10 @@
-from pydantic import BaseModel, validator
 from datetime import datetime
+
 from factory import utils
 from factory.schema.customer_schema import CustomerDetail
 from factory.schema.manager_schema import ManagerBase
 from fastapi import HTTPException, status
+from pydantic import BaseModel, validator
 
 
 class CChannelOrderDetailCreate(BaseModel):

@@ -1,13 +1,14 @@
 import asyncio
+
 from factory import models, oauth2, utils
 from factory.config import settings
 from factory.database import get_db
-from factory.schema import token_schema, stream_schema
+from factory.schema import stream_schema, token_schema
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from sqlalchemy.orm import Session
-from .connection_manager import con_manager
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
+from .connection_manager import con_manager
 
 stream_router = APIRouter(prefix="/stream")
 

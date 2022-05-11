@@ -1,15 +1,14 @@
-from fastapi import FastAPI, Depends
-from factory import oauth2
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from factory import oauth2
 from factory.routers.auth import auth_router
+from factory.routers.c_channel.orders import cchannel_orders_router
 from factory.routers.customer import customer_router
 from factory.routers.ds.orders import ds_orders_router
 from factory.routers.roof.orders import roof_orders_router
-from factory.routers.c_channel.orders import cchannel_orders_router
-from factory.schema import token_schema
-
 from factory.routers.stream.stream import stream_router
-
+from factory.schema import token_schema
 
 app = FastAPI()
 

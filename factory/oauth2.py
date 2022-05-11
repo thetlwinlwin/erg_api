@@ -1,11 +1,12 @@
-from datetime import timedelta, datetime
-from jose import JWTError, jwt
-from fastapi import Depends, status, HTTPException
+from datetime import datetime, timedelta
+
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
 from factory.config import settings
 from factory.schema import token_schema
 from factory.utils import ManagerType
-
 
 # the tokenurl is whatever url in auth.py login
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

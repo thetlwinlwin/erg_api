@@ -1,18 +1,12 @@
-from fastapi import (
-    APIRouter,
-    HTTPException,
-    status,
-    Depends,
-    Request,
-    Response,
-)
 import asyncio
-from sqlalchemy.orm import Session
+
 from factory import models, oauth2
 from factory.database import get_db
-from factory.schema import token_schema, ds_schema, orders_update_schema
-from sqlalchemy import exc
+from factory.schema import ds_schema, orders_update_schema, token_schema
 from factory.utils import ProductionStage
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import exc
+from sqlalchemy.orm import Session
 
 ds_orders_router = APIRouter(
     prefix="/ds",

@@ -1,6 +1,6 @@
+from factory import utils
 from fastapi import HTTPException, status
 from pydantic import BaseModel, validator
-from factory import utils
 
 
 class CustomerBase(BaseModel):

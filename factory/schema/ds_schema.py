@@ -1,15 +1,14 @@
-from pydantic import BaseModel, validator
 from datetime import datetime
+
 from factory.schema.customer_schema import CustomerDetail
 from factory.schema.manager_schema import ManagerBase
 from factory.utils import (
-    DeckSheetEnv,
     LOCAL_TIME_ZONE,
+    DeckSheetEnv,
     ProductionStage,
-    TransType,
-    Product,
 )
 from fastapi import HTTPException, status
+from pydantic import BaseModel, validator
 
 
 class DSOrderDetailCreate(BaseModel):

@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
+from factory import models, oauth2
 from factory.database import get_db
-from factory import models
-from factory.utils import verify, hashing
-from factory import oauth2
 from factory.schema import manager_schema, token_schema
-from sqlalchemy import exc
+from factory.utils import hashing, verify
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from psycopg2.errors import UniqueViolation
+from sqlalchemy import exc
+from sqlalchemy.orm import Session
 
 auth_router = APIRouter(prefix="/manager", tags=["authentication", "Manager"])
 

@@ -1,24 +1,25 @@
 from datetime import datetime
-from fastapi import (
-    APIRouter,
-    File,
-    Form,
-    HTTPException,
-    UploadFile,
-    status,
-    Depends,
-    Request,
-    Response,
-    BackgroundTasks,
-)
-from fastapi.responses import FileResponse
-from sqlalchemy.orm import Session
+
 from factory import models, oauth2
 from factory.database import get_db
 from factory.routers.c_channel.holes_utils import saving_holes_image
-from factory.schema import token_schema, c_channel_schema, orders_update_schema
-from sqlalchemy import exc
+from factory.schema import c_channel_schema, orders_update_schema, token_schema
 from factory.utils import BasePath, ProductionStage
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+    status,
+)
+from fastapi.responses import FileResponse
+from sqlalchemy import exc
+from sqlalchemy.orm import Session
 
 cchannel_orders_router = APIRouter(
     prefix="/cchannel",

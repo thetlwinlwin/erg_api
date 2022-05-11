@@ -1,19 +1,19 @@
 from datetime import datetime
+
 from sqlalchemy import (
+    FLOAT,
     TIMESTAMP,
     Column,
+    Enum,
     ForeignKey,
     Integer,
     String,
-    Enum,
-    FLOAT,
     event,
 )
+from sqlalchemy.orm import Mapper, Session, backref, relationship
 
-from sqlalchemy.orm import Mapper
-from factory.database import Base, SessionLocal
-from sqlalchemy.orm import relationship, backref, Session
 from factory import utils
+from factory.database import Base, SessionLocal
 
 
 class DSOrder(Base):

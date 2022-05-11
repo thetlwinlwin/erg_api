@@ -1,11 +1,12 @@
 from enum import Enum
 from pathlib import WindowsPath
-from passlib.context import CryptContext
-import pytz
 
+import pytz
+from passlib.context import CryptContext
 
 LOCAL_TIME_ZONE = pytz.timezone("Asia/Yangon")
 BasePath = WindowsPath("d:/c_channel_images")
+
 
 class Product(Enum):
     ds = "Deck Sheet"
@@ -17,10 +18,12 @@ class Product(Enum):
     plain = "Plain"
     roof = "Roof"
 
+
 class ProductionStage(Enum):
-    pending = 'pending'
-    producing = 'producing'
-    done = 'done'
+    pending = "pending"
+    producing = "producing"
+    done = "done"
+
 
 class ColorPlainManufacturer(Enum):
     taiwan = "taiwan"
