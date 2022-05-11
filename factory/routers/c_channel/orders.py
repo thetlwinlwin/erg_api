@@ -11,7 +11,7 @@ from fastapi import (
     Response,
     BackgroundTasks,
 )
-
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from factory import models, oauth2
 from factory.database import get_db
@@ -94,6 +94,25 @@ def search_order(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invaild Search Query. Check the parameters again.",
         )
+
+
+@cchannel_orders_router.get(
+    "/get/image/{id}",
+    description="accept order detail id and give back image",
+)
+async def get_images(
+    id: int,
+    db: Session = Depends(get_db),
+    manager_info: token_schema.PayloadData = Depends(oauth2.get_listener),
+):
+    query = db.query(models.CChannelOrderDetails).get(id)
+    if query is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Can't find image associated to this order.",
+        )
+
+    return FileResponse(query.holes)
 
 
 @cchannel_orders_router.delete(
